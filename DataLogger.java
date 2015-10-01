@@ -51,6 +51,7 @@ public class DataLogger extends javax.swing.JFrame {
     String sampleRateSetting = "";
     int onADCs = 0;
     public static int numOfADC = 0;
+    int numOfADC_settings = 0;
     int numOfLines = 0;   
     String pathOfFile;
   //  public static Writer out;
@@ -135,7 +136,7 @@ public class DataLogger extends javax.swing.JFrame {
         labelStatus.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         labelStatus.setText("Waiting for connection to CV_box");
 
-        jLabel3.setText("v1.3");
+        jLabel3.setText("v1.4");
 
         buttonGroup1.add(jRadioVoltage);
         jRadioVoltage.setText("Voltage [V]");
@@ -443,7 +444,8 @@ public class DataLogger extends javax.swing.JFrame {
                    indOfComma = tempStr.indexOf(',',indOfComma+1);
                    indOfNextComma = tempStr.indexOf(',',indOfComma+1);
                    if(indOfNextComma < 0) indOfNextComma = tempStr.length();
-                strVal = tempStr.substring(indOfComma+1,indOfNextComma);
+                //strVal = tempStr.substring(indOfComma+1,indOfNextComma);
+                strVal = tempStr.substring(indOfComma+3,indOfComma+5) + tempStr.substring(indOfComma+1,indOfComma+3);
                 int i1 = Integer.parseInt(strVal, 16);
                 if (buttonGroup1.isSelected(jRadioVoltage.getModel())){
                 outStr = outStr + "," + convertToVoltage(i1);
@@ -539,7 +541,7 @@ public class DataLogger extends javax.swing.JFrame {
 
     private void ConnectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConnectButtonActionPerformed
         
-        String answer = "";
+        String answer = "OK__OK__";
         int response = JOptionPane.YES_OPTION;
         
         if(!isConnected)
@@ -556,14 +558,7 @@ public class DataLogger extends javax.swing.JFrame {
             currentADCs  |= (booleanToInt(jCheckBox4.isSelected()) << 2);
             currentADCs  |= (booleanToInt(jCheckBox5.isSelected()) << 3);
             currentADCs  |= (booleanToInt(jCheckBox6.isSelected()) << 4);
-                    
-            if((isAlreadySet && !sampleRateSetting.contentEquals(jSampleRate.getSelectedItem().toString())) || (isAlreadySet && currentADCs!=onADCs))
-            {
-                response = JOptionPane.showConfirmDialog(this, "Changing parameters requires hw reset of CV_box!\n Have you done reset?", "Reset of CV_box needed", JOptionPane.OK_CANCEL_OPTION);               
-                if (response == JOptionPane.YES_OPTION) numberOfFile = 1;
-            }            
-            if (response == JOptionPane.YES_OPTION)
-            {
+              
             serialPort = new SerialPort(jTextCOM.getText());
             if(!serialPort.isOpened()) serialPort.openPort();//Open serial port
             serialPort.setParams(SerialPort.BAUDRATE_256000,
@@ -571,6 +566,25 @@ public class DataLogger extends javax.swing.JFrame {
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);                        
             serialPort.purgePort(PURGE_RXCLEAR | PURGE_TXCLEAR);
+            
+            
+            if((isAlreadySet && !sampleRateSetting.contentEquals(jSampleRate.getSelectedItem().toString())) || (isAlreadySet && currentADCs!=onADCs))
+            {
+                //response = JOptionPane.showConfirmDialog(this, "Changing parameters requires hw reset of CV_box!\n Have you done reset?", "Reset of CV_box needed", JOptionPane.OK_CANCEL_OPTION);               
+                if (response == JOptionPane.YES_OPTION) numberOfFile = 1;
+                 serialPort.writeString("STOP");
+             //    serialPort.
+             //    answer = serialPort.readString(numOfADC_settings * 2 + 2 + 8,0xFFFF); 
+                 serialPort.purgePort(PURGE_RXCLEAR | PURGE_TXCLEAR);
+            }            
+            
+            
+         //   if(answer.contains("OK__OK__"))
+        //    {
+               answer = "";
+      //      if (response == JOptionPane.YES_OPTION)
+       //     {
+            
             
             if(!(isAlreadySet && sampleRateSetting.contentEquals(jSampleRate.getSelectedItem().toString()) && currentADCs==onADCs))
             {
@@ -581,7 +595,7 @@ public class DataLogger extends javax.swing.JFrame {
             onADCs  |= (booleanToInt(jCheckBox6.isSelected()) << 4);
             
             numOfADC = booleanToInt(jCheckBox1.isSelected())+booleanToInt(jCheckBox2.isSelected())+booleanToInt(jCheckBox4.isSelected())+booleanToInt(jCheckBox5.isSelected())+booleanToInt(jCheckBox6.isSelected());
-            
+            numOfADC_settings = numOfADC;
             
             String picked = ""+booleanToString(jCheckBox6.isSelected())+booleanToString(jCheckBox5.isSelected())+booleanToString(jCheckBox4.isSelected())+booleanToString(jCheckBox2.isSelected())+booleanToString(jCheckBox1.isSelected());
             serialPort.writeString(picked);
@@ -616,6 +630,7 @@ public class DataLogger extends javax.swing.JFrame {
                
             }
             }
+          //  }
             else
             {
                 
@@ -629,7 +644,7 @@ public class DataLogger extends javax.swing.JFrame {
                     //serialPort.readString(i, i)
          
             
-            }
+           // }
             
             
 
@@ -765,7 +780,7 @@ public class DataLogger extends javax.swing.JFrame {
         
         
         String defaultPath = "D:\\Ostatní\\Test_app";
-//        String defaultPath = "C:\\";
+      //  String defaultPath = "C:\\";
         limitSampleRates();
         jSampleRate.setSelectedIndex(0);
         cestaSlozky = defaultPath;

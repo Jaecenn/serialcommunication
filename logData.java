@@ -38,12 +38,15 @@ public class logData implements Runnable{
                  //     DataLogger.serialPort.purgePort(PURGE_RXCLEAR | PURGE_TXCLEAR);
                
                
-                      String hex = DataLogger.serialPort.readHexString(DataLogger.numOfADC * 2 + (DataLogger.numOfADC-1) + 2);
+                      //String hex = DataLogger.serialPort.readHexString(DataLogger.numOfADC * 2 + (DataLogger.numOfADC-1) + 2);
                       //hex = hex.replaceAll("2C", ",");
+                      
+                      String hex = DataLogger.serialPort.readHexString(DataLogger.numOfADC * 2 + 2);
                       hex=hex.replaceAll("\\s+","");
                       
                       
-                      endLine = hex.indexOf("0A0D");
+                     // endLine = hex.indexOf("0A0D");
+                       endLine = hex.indexOf("0D0A");
                       int offset = 4;
                       if (endLine < 0)
                       {
@@ -74,7 +77,7 @@ public class logData implements Runnable{
                               offset = 4;
                           }
                           res = res + "," + sub;
-                          i = i+6;
+                          i = i+4;
                           if(i>=hex.length())
                           {
                               i = i - hex.length();
