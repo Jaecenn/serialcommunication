@@ -572,9 +572,11 @@ public class DataLogger extends javax.swing.JFrame {
             {
                 //response = JOptionPane.showConfirmDialog(this, "Changing parameters requires hw reset of CV_box!\n Have you done reset?", "Reset of CV_box needed", JOptionPane.OK_CANCEL_OPTION);               
                 if (response == JOptionPane.YES_OPTION) numberOfFile = 1;
+                serialPort.purgePort(PURGE_RXCLEAR | PURGE_TXCLEAR);
                  serialPort.writeString("STOP");
              //    serialPort.
              //    answer = serialPort.readString(numOfADC_settings * 2 + 2 + 8,0xFFFF); 
+                 while (serialPort.getInputBufferBytesCount()==0);
                  serialPort.purgePort(PURGE_RXCLEAR | PURGE_TXCLEAR);
             }            
             
@@ -597,7 +599,7 @@ public class DataLogger extends javax.swing.JFrame {
             numOfADC = booleanToInt(jCheckBox1.isSelected())+booleanToInt(jCheckBox2.isSelected())+booleanToInt(jCheckBox4.isSelected())+booleanToInt(jCheckBox5.isSelected())+booleanToInt(jCheckBox6.isSelected());
             numOfADC_settings = numOfADC;
             
-            String picked = ""+booleanToString(jCheckBox6.isSelected())+booleanToString(jCheckBox5.isSelected())+booleanToString(jCheckBox4.isSelected())+booleanToString(jCheckBox2.isSelected())+booleanToString(jCheckBox1.isSelected());
+            String picked = ""+booleanToString(jCheckBox1.isSelected())+booleanToString(jCheckBox2.isSelected())+booleanToString(jCheckBox4.isSelected())+booleanToString(jCheckBox5.isSelected())+booleanToString(jCheckBox6.isSelected());
             serialPort.writeString(picked);
             answer = serialPort.readString(8,0xFFFF);    
             if(answer.contentEquals("OK__OK__"))
